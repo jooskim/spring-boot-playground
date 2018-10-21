@@ -1,11 +1,15 @@
 package com.jooskim.demo.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Person implements Serializable {
@@ -17,6 +21,20 @@ public class Person implements Serializable {
 
     private String firstName;
     private String lastName;
+
+    @OneToMany(
+        mappedBy = "orderedBy",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
+    private List<Order> orders = new ArrayList<Order>();
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+    }
+
+    public void removeOrder(Order order) {
+        this.orders.remove(order);
+    }
 
     /**
      * @return the firstName

@@ -1,6 +1,10 @@
 package com.jooskim.demo.controllers;
 
+import java.util.List;
+
 import com.jooskim.demo.models.EchoRequest;
+import com.jooskim.demo.models.Order;
+import com.jooskim.demo.models.OrderRegistry;
 import com.jooskim.demo.models.Person;
 import com.jooskim.demo.models.PersonRegistry;
 
@@ -23,6 +27,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class MainController {
     @Autowired
     private PersonRegistry peopleRegistry;
+
+    @Autowired
+    private OrderRegistry orderRegistry;
 
     @GetMapping(path = "/echo/{msg}")
     @ResponseBody
@@ -59,10 +66,28 @@ public class MainController {
         return p;
     }
 
+    @GetMapping(path = "/orderBook/{userId},{bookName}")
+    @ResponseBody
+    public Order placeOrderFromUser(@PathVariable(name = "userId") Long id,
+                                    @PathVariable(name = "bookName") String bookName) {
+        Order no = new Order();
+        Person person = peopleRegistry.findById(id).get();
+        no.setName(bookName);;
+        no.setOrderedBy(person);
+        orderRegistry.save(no);
+        return no;
+    }
+
     @GetMapping(path = "/people")
     @ResponseBody
     public Page<Person> getPeopleByPage(Pageable pageable) {
         return peopleRegistry.findAll(pageable);
+    }
+
+    @GetMapping(path = "/books")
+    @ResponseBody
+    public Page<Order> getBooksByPage(Pageable pageable) {
+        return orderRegistry.findAll(pageable);
     }
 
 }
